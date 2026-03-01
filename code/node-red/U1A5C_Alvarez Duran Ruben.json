@@ -1,0 +1,411 @@
+[
+    {
+        "id": "d18cb8b01fb132d2",
+        "type": "tab",
+        "label": "U1A5 Calibración (MQTT WiFi) - Layout Nuevo",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "2168d6b58636c873",
+        "type": "mqtt in",
+        "z": "d18cb8b01fb132d2",
+        "name": "ESP32 -> meca/calibrar/adc",
+        "topic": "meca/calibrar/adc",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "d938bf99c0649a02",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 120,
+        "y": 140,
+        "wires": [
+            [
+                "d888d18d734287b8",
+                "91ebd0dddc15d7d9"
+            ]
+        ]
+    },
+    {
+        "id": "d888d18d734287b8",
+        "type": "json",
+        "z": "d18cb8b01fb132d2",
+        "name": "Parse JSON",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 370,
+        "y": 140,
+        "wires": [
+            [
+                "58a72c9b98104b01"
+            ]
+        ]
+    },
+    {
+        "id": "58a72c9b98104b01",
+        "type": "function",
+        "z": "d18cb8b01fb132d2",
+        "name": "Mapear a sample {t_ms,seq,s1,s2}",
+        "func": "// Espera: {t_ms, seq, s:[s1,s2]}\nconst p = msg.payload;\nif (!p || typeof p !== 'object') return null;\n\nconst t_ms = Number.isFinite(p.t_ms) ? p.t_ms : (Number.isFinite(p.t) ? p.t : null);\nconst seq  = Number.isFinite(p.seq) ? p.seq : null;\nconst sArr = Array.isArray(p.s) ? p.s : null;\nif (t_ms === null || !sArr || sArr.length < 2) return null;\n\nconst s1 = parseInt(sArr[0], 10);\nconst s2 = parseInt(sArr[1], 10);\nif (!Number.isFinite(s1) || !Number.isFinite(s2)) return null;\n\nmsg.topic = \"sample\";\nmsg.payload = { t_ms, seq, s1, s2 };\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 640,
+        "y": 140,
+        "wires": [
+            [
+                "de708c6142082158"
+            ]
+        ]
+    },
+    {
+        "id": "7f14c49ef08c19bc",
+        "type": "ui_button",
+        "z": "d18cb8b01fb132d2",
+        "name": "Capturar NEGRO",
+        "group": "b4b06d3f4f5fc419",
+        "order": 1,
+        "width": 3,
+        "height": 1,
+        "passthru": false,
+        "label": "Capturar NEGRO",
+        "payload": "1",
+        "payloadType": "str",
+        "topic": "cap_black",
+        "topicType": "str",
+        "x": 150,
+        "y": 200,
+        "wires": [
+            [
+                "de708c6142082158"
+            ]
+        ]
+    },
+    {
+        "id": "4676b2527b7df705",
+        "type": "ui_button",
+        "z": "d18cb8b01fb132d2",
+        "name": "Capturar BLANCO",
+        "group": "b4b06d3f4f5fc419",
+        "order": 2,
+        "width": 3,
+        "height": 1,
+        "passthru": false,
+        "label": "Capturar BLANCO",
+        "payload": "1",
+        "payloadType": "str",
+        "topic": "cap_white",
+        "topicType": "str",
+        "x": 150,
+        "y": 240,
+        "wires": [
+            [
+                "de708c6142082158"
+            ]
+        ]
+    },
+    {
+        "id": "7312da056886b071",
+        "type": "ui_button",
+        "z": "d18cb8b01fb132d2",
+        "name": "Reset calib",
+        "group": "b4b06d3f4f5fc419",
+        "order": 3,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "label": "Reset calibración",
+        "payload": "1",
+        "payloadType": "str",
+        "topic": "reset_calib",
+        "topicType": "str",
+        "x": 170,
+        "y": 280,
+        "wires": [
+            [
+                "de708c6142082158"
+            ]
+        ]
+    },
+    {
+        "id": "6225d52325b17e53",
+        "type": "ui_text",
+        "z": "d18cb8b01fb132d2",
+        "group": "b4b06d3f4f5fc419",
+        "order": 4,
+        "width": 6,
+        "height": 7,
+        "name": "Parámetros",
+        "label": "Parámetros de calibración",
+        "format": "<pre style=\"white-space:pre-wrap\">{{msg.payload}}</pre>",
+        "layout": "row-spread",
+        "x": 890,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "a7128d1186a6cb13",
+        "type": "ui_chart",
+        "z": "d18cb8b01fb132d2",
+        "name": "RAW",
+        "group": "a719980fd9af20df",
+        "order": 1,
+        "width": 6,
+        "height": 6,
+        "label": "RAW — s1 y s2",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "Sin datos",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "4095",
+        "removeOlder": "30",
+        "removeOlderPoints": "200",
+        "removeOlderUnit": "1",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "outputs": 1,
+        "x": 870,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "93ba7adc17c3267a",
+        "type": "ui_chart",
+        "z": "d18cb8b01fb132d2",
+        "name": "NORM",
+        "group": "a719980fd9af20df",
+        "order": 2,
+        "width": 6,
+        "height": 6,
+        "label": "NORM (0–1) — s1_norm y s2_norm",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "Calibra (NEGRO y BLANCO) para ver norm",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "1",
+        "removeOlder": "30",
+        "removeOlderPoints": "200",
+        "removeOlderUnit": "1",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "outputs": 1,
+        "x": 870,
+        "y": 230,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1375338796abb5ec",
+        "type": "ui_gauge",
+        "z": "d18cb8b01fb132d2",
+        "name": "Gauge s1",
+        "group": "c431bbd5d3abafea",
+        "order": 1,
+        "width": 3,
+        "height": 4,
+        "gtype": "gage",
+        "title": "s1 (RAW)",
+        "label": "ADC",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "4095",
+        "x": 880,
+        "y": 250,
+        "wires": []
+    },
+    {
+        "id": "30066dd0c21d6cd2",
+        "type": "ui_gauge",
+        "z": "d18cb8b01fb132d2",
+        "name": "Gauge s2",
+        "group": "c431bbd5d3abafea",
+        "order": 2,
+        "width": 3,
+        "height": 4,
+        "gtype": "gage",
+        "title": "s2 (RAW)",
+        "label": "ADC",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "4095",
+        "x": 880,
+        "y": 270,
+        "wires": []
+    },
+    {
+        "id": "9d560d2bf4feec61",
+        "type": "ui_text",
+        "z": "d18cb8b01fb132d2",
+        "group": "c431bbd5d3abafea",
+        "order": 3,
+        "width": 6,
+        "height": 1,
+        "name": "Conteo",
+        "label": "Recepción",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 880,
+        "y": 290,
+        "wires": []
+    },
+    {
+        "id": "a3a87ddb7416d4eb",
+        "type": "ui_text",
+        "z": "d18cb8b01fb132d2",
+        "group": "c431bbd5d3abafea",
+        "order": 4,
+        "width": 6,
+        "height": 1,
+        "name": "LINEA/NO",
+        "label": "Detección por umbral",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 890,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "de708c6142082158",
+        "type": "function",
+        "z": "d18cb8b01fb132d2",
+        "name": "Calibración + UI + CSV",
+        "func": "/*\nEntradas:\n- msg.topic=\"sample\" con msg.payload={t_ms,seq,s1,s2}\n- msg.topic=\"cap_black\"  (captura NEGRO usando última muestra)\n- msg.topic=\"cap_white\"  (captura BLANCO usando última muestra)\n- msg.topic=\"reset_calib\"\nSalidas:\n1 RAW chart (series s1,s2)      -> ui_chart\n2 NORM chart (s1_norm,s2_norm)  -> ui_chart\n3 Gauge s1\n4 Gauge s2\n5 Texto conteo\n6 Texto parámetros (min/max/thr + Δ)\n7 Texto detección (LINEA/NO)\n8 File out (CSV, append)\n*/\n\nfunction init() {\n    return {\n        min_line: { s1: null, s2: null },\n        max_floor:{ s1: null, s2: null },\n        thr:      { s1: null, s2: null },\n        captures: { black: [], white: [] },\n        count: 0,\n        headerWritten: false,\n        last: null\n    };\n}\n\nfunction isNum(x){ return Number.isFinite(x); }\n\nfunction clamp01(x){\n    if (!isNum(x)) return null;\n    if (x < 0) return 0;\n    if (x > 1) return 1;\n    return x;\n}\n\nfunction compute(channel, val, st){\n    var min = st.min_line[channel];\n    var max = st.max_floor[channel];\n    var thr = null, norm = null, line = null;\n\n    if (isNum(min) && isNum(max) && (max !== min)){\n        thr  = (min + max) / 2.0;\n        norm = clamp01((val - min) / (max - min));\n\n        if (min < max) line = (val <= thr);\n        else          line = (val >= thr);\n    }\n    return {min:min, max:max, thr:thr, norm:norm, line:line};\n}\n\nfunction delta(last2){\n    if (!last2 || last2.length < 2) return null;\n    var a = last2[last2.length-2];\n    var b = last2[last2.length-1];\n    return { s1: Math.abs(b.s1 - a.s1), s2: Math.abs(b.s2 - a.s2) };\n}\n\nfunction fmt(n, d){\n    if (!isNum(n)) return \"—\";\n    return n.toFixed(d);\n}\n\nvar st = flow.get(\"u1a5_calib\") || init();\n\nif (msg.topic === \"reset_calib\") {\n    var keep = { count: st.count, headerWritten: st.headerWritten, last: st.last };\n    st = init();\n    st.count = keep.count;\n    st.headerWritten = keep.headerWritten;\n    st.last = keep.last;\n    flow.set(\"u1a5_calib\", st);\n\n    var txt = \"Calibración reiniciada.\\n\" +\n              \"1) Coloca sensores en NEGRO y presiona 'Capturar NEGRO'.\\n\" +\n              \"2) Coloca sensores en BLANCO y presiona 'Capturar BLANCO'.\";\n    return [null,null,null,null,null, {payload: txt}, null, null];\n}\n\nif (msg.topic === \"cap_black\" || msg.topic === \"cap_white\") {\n    if (!st.last) return null;\n\n    var cur = st.last;\n    var cap = { t_ms: cur.t_ms, s1: cur.s1, s2: cur.s2 };\n\n    if (msg.topic === \"cap_black\") {\n        st.min_line.s1 = cap.s1;\n        st.min_line.s2 = cap.s2;\n        st.captures.black.push(cap);\n        if (st.captures.black.length > 2) st.captures.black.shift();\n    } else {\n        st.max_floor.s1 = cap.s1;\n        st.max_floor.s2 = cap.s2;\n        st.captures.white.push(cap);\n        if (st.captures.white.length > 2) st.captures.white.shift();\n    }\n\n    var c1 = compute(\"s1\", cap.s1, st);\n    var c2 = compute(\"s2\", cap.s2, st);\n    st.thr.s1 = c1.thr;\n    st.thr.s2 = c2.thr;\n\n    var dB = delta(st.captures.black);\n    var dW = delta(st.captures.white);\n\n    var txt = \"\"\n      + \"Captura: \" + (msg.topic === \"cap_black\" ? \"NEGRO (min_line)\" : \"BLANCO (max_floor)\") + \"\\n\"\n      + \"s1 min_line=\" + fmt(st.min_line.s1,0) + \" | max_floor=\" + fmt(st.max_floor.s1,0) + \" | thr=\" + fmt(st.thr.s1,0) + \"\\n\"\n      + \"s2 min_line=\" + fmt(st.min_line.s2,0) + \" | max_floor=\" + fmt(st.max_floor.s2,0) + \" | thr=\" + fmt(st.thr.s2,0) + \"\\n\"\n      + \"Δ Repetibilidad (últimas 2 capturas):\\n\"\n      + \"  NEGRO:  Δs1=\" + (dB? fmt(dB.s1,0):\"—\") + \" , Δs2=\" + (dB? fmt(dB.s2,0):\"—\") + \"\\n\"\n      + \"  BLANCO: Δs1=\" + (dW? fmt(dW.s1,0):\"—\") + \" , Δs2=\" + (dW? fmt(dW.s2,0):\"—\") + \"\\n\";\n\n    flow.set(\"u1a5_calib\", st);\n    return [null,null,null,null,null, {payload: txt}, null, null];\n}\n\nif (msg.topic !== \"sample\") return null;\n\nvar t_ms = msg.payload.t_ms;\nvar s1 = msg.payload.s1;\nvar s2 = msg.payload.s2;\n\nst.count += 1;\nst.last = msg.payload;\n\nvar c1s = compute(\"s1\", s1, st);\nvar c2s = compute(\"s2\", s2, st);\nst.thr.s1 = c1s.thr;\nst.thr.s2 = c2s.thr;\n\nvar rawMsgs = [\n  { topic: \"s1\", payload: s1, timestamp: Date.now() },\n  { topic: \"s2\", payload: s2, timestamp: Date.now() }\n];\n\nvar normMsgs = [\n  { topic: \"s1_norm\", payload: (c1s.norm===null? null : Number(c1s.norm.toFixed(4))), timestamp: Date.now() },\n  { topic: \"s2_norm\", payload: (c2s.norm===null? null : Number(c2s.norm.toFixed(4))), timestamp: Date.now() }\n];\n\nvar g1 = { payload: s1 };\nvar g2 = { payload: s2 };\n\nvar countMsg = { payload: \"Muestras recibidas: \" + st.count + \" | t_ms (última): \" + t_ms };\n\nvar dB = delta(st.captures.black);\nvar dW = delta(st.captures.white);\n\nvar paramsTxt = \"\"\n  + \"Parámetros actuales:\\n\"\n  + \"s1 min_line=\" + fmt(st.min_line.s1,0) + \" | max_floor=\" + fmt(st.max_floor.s1,0) + \" | thr=\" + fmt(st.thr.s1,0) + \"\\n\"\n  + \"s2 min_line=\" + fmt(st.min_line.s2,0) + \" | max_floor=\" + fmt(st.max_floor.s2,0) + \" | thr=\" + fmt(st.thr.s2,0) + \"\\n\"\n  + \"Δ Repetibilidad (últimas 2 capturas):\\n\"\n  + \"  NEGRO:  Δs1=\" + (dB? fmt(dB.s1,0):\"—\") + \" , Δs2=\" + (dB? fmt(dB.s2,0):\"—\") + \"\\n\"\n  + \"  BLANCO: Δs1=\" + (dW? fmt(dW.s1,0):\"—\") + \" , Δs2=\" + (dW? fmt(dW.s2,0):\"—\") + \"\\n\"\n  + \"Norm (0–1): s1=\" + (c1s.norm===null? \"—\": fmt(c1s.norm,3)) + \" | s2=\" + (c2s.norm===null? \"—\": fmt(c2s.norm,3)) + \"\\n\";\n\nvar paramsMsg = { payload: paramsTxt };\n\nvar line1 = (c1s.line===null? \"—\" : (c1s.line? \"LINEA\":\"NO LINEA\"));\nvar line2 = (c2s.line===null? \"—\" : (c2s.line? \"LINEA\":\"NO LINEA\"));\nvar lineMsg = { payload: \"s1: \" + line1 + \" | s2: \" + line2 };\n\nvar thr1 = (isNum(st.thr.s1) ? Number(st.thr.s1.toFixed(1)) : \"\");\nvar thr2 = (isNum(st.thr.s2) ? Number(st.thr.s2.toFixed(1)) : \"\");\nvar n1 = (c1s.norm===null? \"\" : Number(c1s.norm.toFixed(4)));\nvar n2 = (c2s.norm===null? \"\" : Number(c2s.norm.toFixed(4)));\nvar l1 = (c1s.line===null? \"\" : (c1s.line? 1:0));\nvar l2 = (c2s.line===null? \"\" : (c2s.line? 1:0));\n\nvar row = [t_ms, s1, s2, n1, n2, thr1, thr2, l1, l2].join(\",\");\n\nvar fileMsgs = [];\nif (!st.headerWritten) {\n    st.headerWritten = true;\n    fileMsgs.push({ payload: \"t_ms,s1,s2,s1_norm,s2_norm,thr1,thr2,line1,line2\" });\n}\nfileMsgs.push({ payload: row });\n\nflow.set(\"u1a5_calib\", st);\n\nreturn [rawMsgs, normMsgs, g1, g2, countMsg, paramsMsg, lineMsg, fileMsgs];\n",
+        "outputs": 8,
+        "noerr": 0,
+        "x": 610,
+        "y": 240,
+        "wires": [
+            [
+                "a7128d1186a6cb13"
+            ],
+            [
+                "93ba7adc17c3267a"
+            ],
+            [
+                "1375338796abb5ec"
+            ],
+            [
+                "30066dd0c21d6cd2"
+            ],
+            [
+                "9d560d2bf4feec61"
+            ],
+            [
+                "6225d52325b17e53"
+            ],
+            [
+                "a3a87ddb7416d4eb"
+            ],
+            [
+                "fb806fd98676d275"
+            ]
+        ]
+    },
+    {
+        "id": "fb806fd98676d275",
+        "type": "file",
+        "z": "d18cb8b01fb132d2",
+        "name": "CSV (append)",
+        "filename": "C:\\Users\\rav__\\Documents\\PlatformIO\\Projects\\U1A5\\U1A5C_AlvarezDuran_Ruben.csv",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 900,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "91ebd0dddc15d7d9",
+        "type": "debug",
+        "z": "d18cb8b01fb132d2",
+        "name": "debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 350,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "d938bf99c0649a02",
+        "type": "mqtt-broker",
+        "name": "HiveMQ Public",
+        "broker": "broker.hivemq.com",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true
+    },
+    {
+        "id": "b4b06d3f4f5fc419",
+        "type": "ui_group",
+        "name": "Controles + Parámetros",
+        "tab": "49b1675c09d24401",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "a719980fd9af20df",
+        "type": "ui_group",
+        "name": "Gráficas",
+        "tab": "49b1675c09d24401",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "c431bbd5d3abafea",
+        "type": "ui_group",
+        "name": "Estado",
+        "tab": "49b1675c09d24401",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "49b1675c09d24401",
+        "type": "ui_tab",
+        "name": "U1A5",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "2ff3220c0489040f",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]

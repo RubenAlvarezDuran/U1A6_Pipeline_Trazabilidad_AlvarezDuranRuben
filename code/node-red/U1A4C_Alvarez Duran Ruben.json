@@ -1,0 +1,21 @@
+[
+    {
+        "id": "file_csv",
+        "type": "file",
+        "z": "a1b2c3d4e5f6g7h8",
+        "name": "Guardar CSV (append)",
+        "filename": "C:\\Users\\rav__\\Documents\\8vo Semestre\\Ciberfisica\\U1A4C_AlvarezDuran_Ruben.csv",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "false",
+        "encoding": "utf8",
+        "x": 830,
+        "y": 220,
+        "wires": [
+            [
+                "dbg_file"
+            ]
+        ]
+    }
+]
